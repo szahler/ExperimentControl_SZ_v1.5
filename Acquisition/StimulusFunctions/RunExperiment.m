@@ -96,22 +96,24 @@ if config.canceled == false
     
     % START STRAIN GAUGE ARDUINO ------------------------------------------
     if config.startup.nidaq == 1
-        try
-            fprintf('Initializing strain gauge arduino\n');
-            b = serial(config.behavior_com);
-            b.BaudRate=9600;
-            fopen(b);
-            pause(2)
-            fprintf('Zeroing strain gauge measurement\n');
-            fprintf(b, '1'); % send command to arduino
-    
-            config.startup.strain_gauge = 1;
-            
-        catch ME
+        if config.strain_gauge_exist == true
+            try
+                fprintf('Initializing strain gauge arduino\n');
+                b = serial(config.behavior_com);
+                b.BaudRate=9600;
+                fopen(b);
+                pause(2)
+                fprintf('Zeroing strain gauge measurement\n');
+                fprintf(b, '1'); % send command to arduino
 
-            config.startup.strain_gauge = 0;
-            fprintf('Problem with strain gauge...\n');
+                config.startup.strain_gauge = 1;
 
+            catch ME
+
+                config.startup.strain_gauge = 0;
+                fprintf('Problem with strain gauge...\n');
+
+            end
         end
     end
     
