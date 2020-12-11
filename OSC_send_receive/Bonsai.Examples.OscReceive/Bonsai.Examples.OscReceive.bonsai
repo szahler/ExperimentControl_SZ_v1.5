@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<WorkflowBuilder Version="2.4.0"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xmlns:osc="clr-namespace:Bonsai.Osc;assembly=Bonsai.Osc"
+                 xmlns="https://bonsai-rx.org/2018/workflow">
+  <Workflow>
+    <Nodes>
+      <Expression xsi:type="Combinator">
+        <Combinator xsi:type="osc:CreateUdpClient">
+          <osc:Name>UdpReceive</osc:Name>
+          <osc:Port>2323</osc:Port>
+          <osc:RemoteHostName>localhost</osc:RemoteHostName>
+          <osc:RemotePort>0</osc:RemotePort>
+        </Combinator>
+      </Expression>
+      <Expression xsi:type="osc:ReceiveMessage">
+        <osc:Connection>UdpReceive</osc:Connection>
+        <osc:Address>/number</osc:Address>
+        <osc:TypeTag>i</osc:TypeTag>
+      </Expression>
+    </Nodes>
+    <Edges />
+  </Workflow>
+</WorkflowBuilder>
