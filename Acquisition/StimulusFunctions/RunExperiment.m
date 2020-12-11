@@ -94,6 +94,27 @@ if config.canceled == false
         end
     end
     
+    % START STRAIN GAUGE ARDUINO ------------------------------------------
+    if config.startup.nidaq == 1
+        try
+            fprintf('Initializing strain gauge arduino\n');
+            b = serial(config.behavior_com);
+            b.BaudRate=9600;
+            fopen(b);
+            pause(2)
+            fprintf('Zeroing strain gauge measurement\n');
+            fprintf(b, '1'); % send command to arduino
+    
+            config.startup.strain_gauge = 1;
+            
+        catch ME
+
+            config.startup.strain_gauge = 0;
+            fprintf('Problem with strain gauge...\n');
+
+        end
+    end
+    
     % START TWO-PHOTON --------------------------------------------------------
     if config.startup.arduino == 1
         if config.enable_scanbox == true && exist('config.scanbox_udp')
@@ -145,6 +166,12 @@ if config.canceled == false
         fprintf(a, GenerateCommandMessage('TriggerOff')) % send command to arduino
         fprintf('Closing behavior arduino\n\n')
         fclose(a);
+    end
+    
+    % STOP STRAIN GAUGE ARDUINO ---------------------------------------------------
+    if config.startup.strain_gauge == 1
+        fprintf('Closing strain gauge arduino\n\n')
+        fclose(b);
     end
     
     % STOP NI DAQ -------------------------------------------------------------
