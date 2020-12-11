@@ -37,6 +37,7 @@ if config.canceled == false
         pupil_camera_ch = 'ai3';
         camera_trigger_ch = 'ai4';
         camera2_ch = 'ai5';
+        strain_gauge_ch = 'ai6';
 
         s.addAnalogInputChannel(deviceID, l_airpuff_ch, 'Voltage');
         s.addAnalogInputChannel(deviceID, r_airpuff_ch, 'Voltage');
@@ -44,7 +45,8 @@ if config.canceled == false
         s.addAnalogInputChannel(deviceID, pupil_camera_ch, 'Voltage');
         s.addAnalogInputChannel(deviceID, camera_trigger_ch, 'Voltage');
         s.addAnalogInputChannel(deviceID, camera2_ch, 'Voltage');
-        
+        s.addAnalogInputChannel(deviceID, strain_gauge_ch, 'Voltage');
+
         nChannels = numel(s.Channels);
         for i = 1:nChannels
             s.Channels(i).TerminalConfig = 'SingleEnded';
@@ -56,7 +58,8 @@ if config.canceled == false
         channels{4} = {'pupil_camera_ch',pupil_camera_ch};
         channels{5} = {'camera_trigger_ch',camera_trigger_ch};
         channels{6} = {'camera2_ch',camera2_ch};
-        
+        channels{7} = {'strain_gauge_ch',strain_gauge_ch};
+
         %begin acquisition
         fprintf('Starting NI-DAQ acquisition\n');
         nidaq_fid = fopen(fullfile(config.data_folder, 'temp_nidaq_log.bin'),'w+');
