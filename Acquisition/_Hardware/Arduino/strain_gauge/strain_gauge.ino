@@ -17,19 +17,18 @@ Adafruit_MCP4725 dac;
 void setup() {
   Serial.begin(9600);
   dac.begin(0x62);
-  val_L = hx711_L.read()/100;
-  val_R = hx711_R.read()/100;
+  val_L = hx711_L.read()/250;
+  val_R = hx711_R.read()/250;
 }
 void loop() {
   if (Serial.available() > 0) {
     reset = Serial.read();
     if (reset == '1') {
-        x = 2045 + val_R - val_L;
+        x = 2045 + -(val_L + val_R);
         reset = 0;
     }
   }
   val_L = hx711_L.read()/250;
   val_R = hx711_R.read()/250;
-  Serial.println(val_L - val_R + x);
-  dac.setVoltage(val_L - val_R + x, false);
+  dac.setVoltage(-(val_L + val_R) + x, false);
 }

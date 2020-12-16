@@ -175,12 +175,6 @@ if config.canceled == false
         fclose(a);
     end
     
-    % STOP STRAIN GAUGE ARDUINO ---------------------------------------------------
-    if config.startup.strain_gauge == 1
-        fprintf('Closing strain gauge arduino\n\n')
-        fclose(b);
-    end
-    
     % STOP NI DAQ -------------------------------------------------------------
     if config.startup.nidaq == 1
         pause(2);
@@ -192,6 +186,12 @@ if config.canceled == false
         nidaq.channels = channels;
         nidaq.data = fread(nidaq_fid,[nChannels+1,inf],'double');
         fclose(nidaq_fid);
+    end
+    
+    % STOP STRAIN GAUGE ARDUINO ---------------------------------------------------
+    if config.startup.strain_gauge == 1
+        fprintf('Closing strain gauge arduino\n\n')
+        fclose(b);
     end
     
     config.CancelRequested = canceling.cancel_requested;
