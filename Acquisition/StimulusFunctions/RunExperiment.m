@@ -26,7 +26,7 @@ if config.canceled == false
         fprintf('Initializing NI-DAQ\n');
         deviceID = config.nidaq_id;
         s = daq.createSession('ni');
-        s.Rate = 1000;
+        s.Rate = 2500;
         s.IsContinuous = true;
         config.nidaq_sampling_rate = s.Rate;
 
@@ -102,7 +102,7 @@ if config.canceled == false
         if config.strain_gauge_exist == true
             try
                 fprintf('Initializing strain gauge arduino\n');
-                b = serial(config.behavior_com);
+                b = serial(config.strain_gauge_com);
                 b.BaudRate=9600;
                 fopen(b);
                 pause(2)
@@ -117,6 +117,8 @@ if config.canceled == false
                 fprintf('Problem with strain gauge...\n');
 
             end
+        else
+            config.startup.strain_gauge = 0;
         end
     end
     
@@ -181,6 +183,7 @@ if config.canceled == false
     
     % STOP NI DAQ -------------------------------------------------------------
     if config.startup.nidaq == 1
+        pause(2);
         s.stop();               %stops ni daq
         fprintf('DATA ACQUISITION DONE; STOP CAMERA\n')
 
