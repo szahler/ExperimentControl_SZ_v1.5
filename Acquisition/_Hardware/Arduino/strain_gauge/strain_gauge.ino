@@ -24,7 +24,7 @@ void loop() {
   if (Serial.available() > 0) {
     reset = Serial.read();
     if (reset == '1') {
-        x = 2045 + -(val_L + val_R);
+        x = 2045 + val_L + val_R;
         reset = 0;
     }
   }
