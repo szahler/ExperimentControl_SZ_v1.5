@@ -26,7 +26,7 @@
 #define DAQ_OPTO_PIN 7
 
 #define INTAN_CAMERA_TRIGGER_PIN 9
-#define INTAN_SOLENOID_R_PIN 12
+#define INTAN_OPTO_PIN 12
 
 
 // ====== COMMAND STRING VARIABLES ======
@@ -50,7 +50,8 @@ bool SESSION_RUNNING = false;
 bool LEFT_SOLENOID_ON = false;
 bool RIGHT_SOLENOID_ON = false;
 bool OPTO_ON = false;
-bool PUFF_FINISHED = true;
+bool LEFT_PUFF_FINISHED = true;
+bool RIGHT_PUFF_FINISHED = true;
 bool OPTO_FINISHED = true;
 
 unsigned long startTime;
@@ -71,9 +72,9 @@ void setup() {
   pinMode(DAQ_OPTO_PIN, OUTPUT);
 
   pinMode(INTAN_CAMERA_TRIGGER_PIN, OUTPUT);
-  pinMode(INTAN_SOLENOID_R_PIN, OUTPUT);  
+  pinMode(INTAN_OPTO_PIN, OUTPUT);  
 
-  Timer1.initialize(2500);   // Initialize Timer1 (Set to 50% of desired frame length in us. E.g. 10000 for 20ms)
+  Timer1.initialize(5000);   // Initialize Timer1 (Set to 50% of desired frame length in us. E.g. 10000 for 20ms)
   Timer1.attachInterrupt(trigger_callback);  // attaches callback() as a timer overflow interrupt
 
   Serial.begin (9600);
@@ -100,10 +101,10 @@ void loop() {
 
     NEW_COMMAND = 1;
 
-    // Ignore bad commands
-    if (leftpuff_DURATION > 0 && rightpuff_DURATION > 0) {
-      NEW_COMMAND = 0;
-    }
+//    // Ignore bad commands
+//    if (leftpuff_DURATION > 0 && rightpuff_DURATION > 0) {
+//      NEW_COMMAND = 0;
+//    }
   }
 
 
@@ -120,16 +121,20 @@ void loop() {
     if (opto_DURATION > 0 || leftpuff_DURATION > 0 || rightpuff_DURATION > 0){
       
       OPTO_FINISHED = true;
-      PUFF_FINISHED = true;
+      LEFT_PUFF_FINISHED = true;
+      RIGHT_PUFF_FINISHED = true;
       if (opto_DURATION > 0) {
         OPTO_FINISHED = false;
       }
-      if (leftpuff_DURATION > 0 || rightpuff_DURATION > 0) {
-        PUFF_FINISHED = false;
+      if (leftpuff_DURATION > 0) {
+        LEFT_PUFF_FINISHED = false;
+      }
+      if (rightpuff_DURATION > 0) {
+        RIGHT_PUFF_FINISHED = false;
       }
       
       startTime = millis();
-      while (OPTO_FINISHED == false || PUFF_FINISHED == false) {
+      while (OPTO_FINISHED == false || LEFT_PUFF_FINISHED == false || RIGHT_PUFF_FINISHED == false) {
         currentTime = millis();
 
         // =====================================================================
@@ -139,6 +144,7 @@ void loop() {
             if (currentTime - startTime >= opto_OFFSET) {
               digitalWrite(OPTO_PIN, HIGH);
               digitalWrite(DAQ_OPTO_PIN, HIGH);
+              digitalWrite(INTAN_OPTO_PIN,HIGH);
               OPTO_ON = true;
             }
           }
@@ -146,6 +152,7 @@ void loop() {
             if (currentTime - startTime >= opto_OFFSET + opto_DURATION) {
               digitalWrite(OPTO_PIN, LOW);
               digitalWrite(DAQ_OPTO_PIN, LOW);
+              digitalWrite(INTAN_OPTO_PIN,LOW);
               OPTO_ON = false;
               OPTO_FINISHED = true;
             }
@@ -154,7 +161,7 @@ void loop() {
 
         // =====================================================================
         // TOGGLE LEFT PUFF
-        if (PUFF_FINISHED == false && leftpuff_DURATION > 0){
+        if (LEFT_PUFF_FINISHED == false && leftpuff_DURATION > 0){
           if (LEFT_SOLENOID_ON == false) { // if element is off, check whether conditions are right to start
             if (currentTime - startTime >= puff_OFFSET) {
               digitalWrite(SOLENOID_L_PIN, HIGH);
@@ -167,19 +174,18 @@ void loop() {
               digitalWrite(SOLENOID_L_PIN, LOW);
               digitalWrite(DAQ_SOLENOID_L_PIN, LOW);
               LEFT_SOLENOID_ON = false;
-              PUFF_FINISHED = true;
+              LEFT_PUFF_FINISHED = true;
             }
           }
         }
 
         // =====================================================================
         // TOGGLE RIGHT PUFF
-        if (PUFF_FINISHED == false && rightpuff_DURATION > 0){
+        if (RIGHT_PUFF_FINISHED == false && rightpuff_DURATION > 0){
           if (RIGHT_SOLENOID_ON == false) { // if element is off, check whether conditions are right to start
             if (currentTime - startTime >= puff_OFFSET) {
               digitalWrite(SOLENOID_R_PIN, HIGH);
               digitalWrite(DAQ_SOLENOID_R_PIN, HIGH);
-              digitalWrite(INTAN_SOLENOID_R_PIN, HIGH);              
               RIGHT_SOLENOID_ON = true;
             }
           }
@@ -187,9 +193,8 @@ void loop() {
             if (currentTime - startTime >= puff_OFFSET + rightpuff_DURATION) {
               digitalWrite(SOLENOID_R_PIN, LOW);
               digitalWrite(DAQ_SOLENOID_R_PIN, LOW);
-              digitalWrite(INTAN_SOLENOID_R_PIN, LOW);              
               RIGHT_SOLENOID_ON = false;
-              PUFF_FINISHED = true;
+              RIGHT_PUFF_FINISHED = true;
             }
           }
         }
