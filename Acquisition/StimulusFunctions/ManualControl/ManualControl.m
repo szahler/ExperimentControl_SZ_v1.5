@@ -16,11 +16,11 @@ hGroup_puff = uibuttongroup('Units','Normalized','Position',[0 0 1/2 1]);
 hGroup_opto = uibuttongroup('Units','Normalized','Position',[1/2 0 1/2 1]);
 
 % Airpuff group
-default_airpuff_duration = 50; % ms
-default_opto_duration = 250; % ms
-default_opto_intensity = 3000;
-default_opto_cyclelength = 0; % ms
-default_opto_pulselength = 0; % ms
+default_airpuff_duration = 40; % ms
+default_opto_duration = 500; % ms
+default_opto_intensity = 800;
+default_opto_cyclelength = 50; % ms
+default_opto_pulselength = 5; % ms
 
 uicontrol('Style','Text','String','Puff Control','FontSize',16,...
     'Parent',hGroup_puff,'Units','normalized','Position',[1/4 7/8 1/2 1/8]);
@@ -33,6 +33,8 @@ uicontrol('Style','Text','String','Duration (ms)',...
 
 uicontrol('Style','pushbutton','Parent',hGroup_puff,'Units','normalized',...
     'String','Left','Position',[1/8 1/8 2/8 1/8],'Callback',@left_airpuff_button_callback);
+uicontrol('Style','pushbutton','Parent',hGroup_puff,'Units','normalized',...
+    'String','Both','Position',[3/8 1/8 2/8 1/8],'Callback',@both_airpuff_button_callback);
 uicontrol('Style','pushbutton','Parent',hGroup_puff,'Units','normalized',...
     'String','Right','Position',[5/8 1/8 2/8 1/8],'Callback',@right_airpuff_button_callback);
 
@@ -79,6 +81,19 @@ guidata(hFig,struct('parameters', [default_airpuff_duration, default_opto_durati
         
         [ ~, commands] = GenerateCommandMessage('default');
         commands.l_puff = new_airpuff_duration;
+
+        fprintf(GenerateCommandMessage(commands))
+        fprintf('\n\n')
+        fprintf(a, GenerateCommandMessage(commands));
+    end
+    
+    function both_airpuff_button_callback(src,event)
+        data = guidata(src);
+        new_airpuff_duration = str2num(get(data.hField(1),'String'));
+        
+        [ ~, commands] = GenerateCommandMessage('default');
+        commands.l_puff = new_airpuff_duration;
+        commands.r_puff = new_airpuff_duration;
 
         fprintf(GenerateCommandMessage(commands))
         fprintf('\n\n')
