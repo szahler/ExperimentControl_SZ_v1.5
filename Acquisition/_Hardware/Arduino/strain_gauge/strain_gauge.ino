@@ -30,5 +30,7 @@ void loop() {
   }
   val_L = hx711_L.read()/250;
   val_R = hx711_R.read()/250;
-  dac.setVoltage(-(val_L + val_R) + x, false);
+  //dac.setVoltage(-(val_L + val_R) + x, false);
+  dac.setVoltage(val_L + val_R - x, false);
+  
 }
