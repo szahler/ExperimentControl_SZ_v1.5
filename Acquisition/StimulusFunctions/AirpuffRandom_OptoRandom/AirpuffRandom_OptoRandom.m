@@ -60,6 +60,13 @@ SESSION.trials.iti = rand(num_trials,1).*(SESSION.ui.iti_max-SESSION.ui.iti_min)
 SESSION.trials.airpuff_left = rand(num_trials,1) < SESSION.ui.left_airpuff_percent/100;
 SESSION.trials.airpuff_left = logical(SESSION.trials.airpuff_left);
 SESSION.trials.airpuff_right = logical(~SESSION.trials.airpuff_left);
+
+% added for opto only support
+if SESSION.ui.puff_duration == 0
+    SESSION.trials.airpuff_left = SESSION.trials.airpuff_left*0;
+    SESSION.trials.airpuff_right = SESSION.trials.airpuff_right*0;
+end
+
 SESSION.trials.opto = logical(rand(num_trials,1) < SESSION.ui.opto_trials_percentage/100);
 
 %Relabel trials with intensity of 0 as non-opto
@@ -107,7 +114,7 @@ if canceling.cancel_requested ~= true
         
         stim_start = tic;
         first_loop = 1;
-        while toc(stim_start) < (SESSION.ui.puff_duration + SESSION.ui.puff_offset)/1000
+        while first_loop == 1 || toc(stim_start) < (SESSION.ui.puff_duration + SESSION.ui.puff_offset)/1000 % added "first_loop == 1 ||" for opto only support
             if first_loop == 1
                 
                 % generate command message
@@ -116,20 +123,22 @@ if canceling.cancel_requested ~= true
                 if SESSION.trials.opto(TRIAL) == 1
                     commands.opto_duration = SESSION.ui.opto_duration;
                     commands.opto_offset = SESSION.ui.opto_offset;
+                    fprintf('OPTO!\n')
                 end
                 
                 if SESSION.trials.airpuff_left(TRIAL) == 1
                     commands.l_puff = SESSION.ui.puff_duration;
                     commands.puff_offset = SESSION.ui.puff_offset;
-                    message = GenerateCommandMessage(commands);
+%                     message = GenerateCommandMessage(commands);
                     fprintf('LEFT!\n');
-                else
+                elseif SESSION.trials.airpuff_right(TRIAL) == 1 % changed from "else" for opto only support
                     commands.r_puff = SESSION.ui.puff_duration;
                     commands.puff_offset = SESSION.ui.puff_offset;
-                    message = GenerateCommandMessage(commands);
+%                     message = GenerateCommandMessage(commands);
                     fprintf('RIGHT!\n');
                 end
                 
+                message = GenerateCommandMessage(commands);
                 fprintf(a, message); % send command to arduino
                 fprintf([message '\n\n']);
                 fprintf([OGBoxMessage(ogbox_commands) '\n\n'])

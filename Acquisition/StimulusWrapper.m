@@ -8,10 +8,10 @@ config.enable_scanbox = false;
 config.behavior_com = 'COM3'; % original setup
 config.ogbox_com = 'COM5'; 
 config.strain_gauge_com = 'COM4';
-config.nidaq_id = 'Dev1'; % original setup
+config.nidaq_id = 'Dev2'; % original set
 config.computer_name = 'Sebi 2P Room';
-config.code_folder = 'C:\Users\Evan Feinberg\Desktop\ExperimentControl_SZ_v1.5\Acquisition';
-config.data_folder = 'C:\Users\Evan Feinberg\Desktop\Data';
+config.code_folder = 'C:\Users\feinberg lab\Desktop\ExperimentControl_SZ_v1.5\Acquisition';
+config.data_folder = 'C:\Users\feinberg lab\Desktop\Data';
 config.version = '1.5'; % DO NOT CHANGE
 config.pupil_vid_flipped = false; % Set to 'true' if acquired video was flipped horizontally
 config.strain_gauge_exist = true;
@@ -26,3 +26,6 @@ debug_config =RunExperiment('AirpuffRandom_OptoRandom', config);
 %% RUN AirpuffRandom_OptoRandom_ClosedLoop
 % Must restart matlab before running this
 debug_config =RunExperiment('AirpuffRandom_OptoRandom_ClosedLoop', config);
+
+%% RUN AirpuffBehavior_Distractor_v1
+debug_config =RunExperiment('AirpuffBehavior_Distractor_v1', config);

@@ -74,28 +74,6 @@ if config.canceled == false
         fprintf('Problem with NI-DAQ...\n');
         
     end
-
-    % START BEHAVIOR ARDUINO --------------------------------------------------
-    if config.startup.nidaq == 1
-        try
-            fprintf('Initializing behavior arduino\n');
-            a = serial(config.behavior_com);
-            a.BaudRate=9600;
-            a.InputBufferSize = 1500000; % can record up to 166.67 minutes worth of encoder data
-            fopen(a);
-            pause(2)
-            fprintf('Starting camera/encoder trigger\n');
-            fprintf(a, GenerateCommandMessage('TriggerOn')); % send command to arduino
-    
-            config.startup.arduino = 1;
-            
-        catch ME
-
-            config.startup.arduino = 0;
-            fprintf('Problem with Arduino...\n');
-            
-        end
-    end
     
     % START STRAIN GAUGE ARDUINO ------------------------------------------
     if config.startup.nidaq == 1
@@ -119,6 +97,28 @@ if config.canceled == false
             end
         else
             config.startup.strain_gauge = 0;
+        end
+    end
+    
+    % START BEHAVIOR ARDUINO --------------------------------------------------
+    if config.startup.nidaq == 1
+        try
+            fprintf('Initializing behavior arduino\n');
+            a = serial(config.behavior_com);
+            a.BaudRate=9600;
+            a.InputBufferSize = 1500000; % can record up to 166.67 minutes worth of encoder data
+            fopen(a);
+            pause(2)
+            fprintf('Starting camera/encoder trigger\n');
+            fprintf(a, GenerateCommandMessage('TriggerOn')); % send command to arduino
+    
+            config.startup.arduino = 1;
+            
+        catch ME
+
+            config.startup.arduino = 0;
+            fprintf('Problem with Arduino...\n');
+            
         end
     end
     
